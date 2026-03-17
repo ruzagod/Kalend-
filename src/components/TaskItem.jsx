@@ -3,8 +3,9 @@ import { Star, Clock, CheckCircle, ArrowRight, Play, Calendar, X, ArrowUp, Trash
 import { useTasks } from '../context/TaskContext';
 
 export default function TaskItem({ task, variant = 'simple' }) {
-    const { toggleTask, enterFocusMode, rescheduleTask } = useTasks();
+    const { toggleTask, enterFocusMode, rescheduleTask, deleteTask } = useTasks();
     const [isExiting, setIsExiting] = useState(null); // 'left' or 'right'
+
     const [isUrgent, setIsUrgent] = useState(false);
     const hasNotified = useRef(false);
 
@@ -73,7 +74,16 @@ export default function TaskItem({ task, variant = 'simple' }) {
         }, 400);
     };
 
+    const handleDelete = (e) => {
+        e.stopPropagation();
+        setIsExiting('left'); // Or standard fade out
+        setTimeout(() => {
+            deleteTask(task.id);
+        }, 300); // Faster exit for delete
+    };
+
     // Styles based on variant
+
     const getContainerStyle = () => {
         let base = "relative group rounded-xl p-4 mb-3 transition-all duration-300 border backdrop-blur-md ";
 
@@ -123,11 +133,19 @@ export default function TaskItem({ task, variant = 'simple' }) {
 
             <div className="flex flex-col gap-3">
                 {/* Header: Title & Actions */}
-                <div className="flex justify-between items-start gap-3">
-                    <h4 className={`font-medium leading-tight ${task.completed ? 'text-gray-400 line-through' : (isUrgent ? 'text-red-100 flex items-center gap-2' : 'text-gray-50')} ${variant === 'priority' ? 'text-lg' : 'text-base'}`}>
-                        {isUrgent && <BellRing size={16} className="text-red-400 animate-pulse" />}
-                        {task.title}
-                    </h4>
+                <div className="flex justify-between items-start gap-3 w-full">
+                    <div className="flex-1">
+                        <h4 className={`font-medium leading-tight ${task.completed ? 'text-gray-400 line-through' : (isUrgent ? 'text-red-100 flex items-center gap-2' : 'text-gray-50')} ${variant === 'priority' ? 'text-lg' : 'text-base'}`}>
+                            {isUrgent && <BellRing size={16} className="text-red-400 animate-pulse" />}
+                            {task.title}
+                        </h4>
+
+                        {task.description && !task.completed && (
+                            <p className="text-sm text-gray-400 mt-2 leading-relaxed whitespace-pre-wrap">
+                                {task.description}
+                            </p>
+                        )}
+                    </div>
 
                     {/* Actions - The "Buttons" requested */}
                     <div className="flex items-center gap-2 shrink-0">
@@ -151,6 +169,15 @@ export default function TaskItem({ task, variant = 'simple' }) {
                                     <Calendar size={20} className="group-hover/btn:scale-110 transition-transform" />
                                 </button>
 
+                                {/* Delete Action (Red) */}
+                                <button
+                                    onClick={handleDelete}
+                                    className="group/btn p-2 rounded-lg bg-gray-800/50 hover:bg-red-500/20 text-gray-500 hover:text-red-400 border border-transparent hover:border-red-500/30 transition-all opacity-0 group-hover:opacity-100"
+                                    title="Smazat úkol"
+                                >
+                                    <Trash2 size={16} className="group-hover/btn:scale-110 transition-transform" />
+                                </button>
+
                                 {/* Focus Action (Purple) */}
                                 <button
                                     onClick={() => enterFocusMode(task)}
@@ -161,13 +188,25 @@ export default function TaskItem({ task, variant = 'simple' }) {
                                 </button>
                             </>
                         ) : (
-                            <button
-                                onClick={() => toggleTask(task.id)}
-                                className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-                            >
-                                <X size={20} />
-                            </button>
+                            <>
+                                {/* Delete Completed Action (Red) */}
+                                <button
+                                    onClick={handleDelete}
+                                    className="p-2 rounded-lg hover:bg-red-500/20 text-gray-500 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 mr-1"
+                                    title="Smazat úkol"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+
+                                <button
+                                    onClick={() => toggleTask(task.id)}
+                                    className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </>
                         )}
+
                     </div>
                 </div>
 

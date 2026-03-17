@@ -7,11 +7,12 @@ export default function SmartInput() {
     const { addTask, currentDate } = useTasks();
 
     // Manual overrides
-    const [selectedDate, setSelectedDate] = useState('');
     const [selectedTime, setSelectedTime] = useState(''); // New time state
     const [isAllDay, setIsAllDay] = useState(true); // Toggle for all-day
     const [urgency, setUrgency] = useState('normal'); // normal, priority, deadline
+    const [description, setDescription] = useState(''); // New description state
     const [isExpanded, setIsExpanded] = useState(false);
+
 
     const handleSmartAdd = (e) => {
         e.preventDefault();
@@ -64,6 +65,7 @@ export default function SmartInput() {
 
         addTask({
             title: title,
+            description: description.trim() || null,
             type,
             shape,
             time,
@@ -75,9 +77,11 @@ export default function SmartInput() {
         // Reset manual overrides
         setSelectedDate('');
         setSelectedTime('');
+        setDescription('');
         setIsAllDay(true);
         setUrgency('normal');
         setIsExpanded(false);
+
     };
 
     return (
@@ -151,7 +155,19 @@ export default function SmartInput() {
                             </div>
                         </div>
 
+                        {/* Description Field */}
+                        <div className="bg-[#262626] rounded-lg border border-[var(--border-color)] overflow-hidden">
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="Podrobnější popis úkolu (volitelné)..."
+                                rows="2"
+                                className="w-full bg-transparent px-3 py-2 border-none outline-none text-sm text-gray-200 resize-none custom-scrollbar"
+                            />
+                        </div>
+
                         {/* Urgency Toggles */}
+
                         <div className="flex bg-[#262626] rounded-lg p-1 w-fit">
                             <button
                                 type="button"

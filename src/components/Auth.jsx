@@ -5,7 +5,7 @@ import { LogIn, UserPlus, Mail, Lock, Loader2 } from 'lucide-react';
 export default function Auth() {
     const [loading, setLoading] = useState(false);
     const [isSignUp, setIsSignUp] = useState(false);
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
 
@@ -14,14 +14,44 @@ export default function Auth() {
         setLoading(true);
         setError(null);
 
+        // Normalize username: lowercase, no spaces
+        const normalizedUsername = username.toLowerCase().trim().replace(/\s+/g, '');
+        if (normalizedUsername.length < 3) {
+            setError("Uživatelské jméno musí mít alespoň 3 znaky.");
+            setLoading(false);
+            return;
+        }
+
+        // We use a pseudo-email for Supabase Auth to get secure password hashing and session management for free
+        const pseudoEmail = `${normalizedUsername}@energymap.local`;
+
         try {
             if (isSignUp) {
-                const { error } = await supabase.auth.signUp({ email, password });
-                if (error) throw error;
-                alert('Zkontrolujte svůj e-mail pro potvrzení registrace!');
+                const { error } = await supabase.auth.signUp({
+                    email: pseudoEmail,
+                    password,
+                    options: { data: { username: normalizedUsername } }
+                });
+
+                if (error) {
+                    if (error.message.includes('already registered') || error.status === 422) {
+                        throw new Error("Toto uživatelské jméno už existuje. Zvolte prosím jiné.");
+                    }
+                    throw error;
+                }
+                alert('Registrace proběhla úspěšně! Nyní jste přihlášeni.');
             } else {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
-                if (error) throw error;
+                const { error } = await supabase.auth.signInWithPassword({
+                    email: pseudoEmail,
+                    password
+                });
+
+                if (error) {
+                    if (error.message.includes('Invalid login credentials')) {
+                        throw new Error("Špatné uživatelské jméno nebo heslo.");
+                    }
+                    throw error;
+                }
             }
         } catch (error) {
             setError(error.message);
@@ -29,6 +59,7 @@ export default function Auth() {
             setLoading(false);
         }
     };
+
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#050505] p-4 font-sans text-gray-100">
@@ -43,15 +74,15 @@ export default function Auth() {
 
                 <form onSubmit={handleAuth} className="space-y-6">
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300 ml-1">E-mail</label>
+                        <label className="text-sm font-medium text-gray-300 ml-1">Uživatelské jméno</label>
                         <div className="relative group">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-purple-400 transition-colors" size={20} />
+                            <UserPlus className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-purple-400 transition-colors" size={20} />
                             <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
                                 className="w-full bg-[#1a1a1a]/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all placeholder:text-gray-600"
-                                placeholder="vás@email.cz"
+                                placeholder="např. jakub123"
                                 required
                             />
                         </div>

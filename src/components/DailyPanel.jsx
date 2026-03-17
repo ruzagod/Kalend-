@@ -5,6 +5,7 @@ import SmartInput from './SmartInput';
 import EnergyMap from './EnergyMap';
 import TaskItem from './TaskItem';
 import SharePanel from './SharePanel';
+import CalendarManager from './CalendarManager';
 import { Star, Circle, Clock, LogOut } from 'lucide-react';
 
 export default function DailyPanel() {
@@ -40,16 +41,19 @@ export default function DailyPanel() {
 
     return (
         <div className="daily-panel max-w-4xl mx-auto">
-            {/* TOP BAR: Sdílení + Logout */}
-            <div className="flex justify-end items-center gap-4 mb-6">
-                <SharePanel user={user} />
-                <button
-                    onClick={handleLogout}
-                    className="flex items-center gap-2 bg-red-500/5 hover:bg-red-500/10 px-4 py-2 rounded-xl border border-red-500/10 transition-colors text-sm font-medium text-red-400"
-                >
-                    <LogOut size={18} />
-                    <span>Odhlásit se</span>
-                </button>
+            {/* TOP BAR: Kalendáře + Sdílení + Logout */}
+            <div className="flex justify-between items-start mb-6 gap-4">
+                <CalendarManager />
+                <div className="flex items-center gap-4">
+                    <SharePanel />
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 bg-red-500/5 hover:bg-red-500/10 px-4 py-2 rounded-xl border border-red-500/10 transition-colors text-sm font-medium text-red-400"
+                    >
+                        <LogOut size={18} />
+                        <span>Odhlásit se</span>
+                    </button>
+                </div>
             </div>
 
             {/* HEADER: Datum + Progress */}
