@@ -68,12 +68,12 @@ export default function CalendarManager() {
         }
     };
 
-    if (!calendars) return <div className="animate-pulse bg-white/5 h-12 rounded-xl"></div>;
+    if (!calendars || !Array.isArray(calendars)) return <div className="animate-pulse bg-white/5 h-12 rounded-xl"></div>;
 
     const activeCal = calendars.find(c => c.id === activeCalendarId);
 
-    // Group calendars
-    const myCalendars = calendars.filter(c => c.owner_id === user.id && !c.is_shared);
+    // Group calendars safely
+    const myCalendars = calendars.filter(c => c.owner_id === user?.id && !c.is_shared);
     const sharedCalendars = calendars.filter(c => c.is_shared);
 
     return (
@@ -135,7 +135,7 @@ export default function CalendarManager() {
                                     >
                                         <Users size={16} className={activeCalendarId === cal.id ? 'text-blue-400' : 'text-gray-500'} />
                                         <span className="truncate">{cal.name}</span>
-                                        {cal.owner_id === user.id && <span className="ml-auto text-[10px] bg-blue-900/40 text-blue-400 px-1.5 py-0.5 rounded">Vlastník</span>}
+                                        {cal.owner_id === user?.id && <span className="ml-auto text-[10px] bg-blue-900/40 text-blue-400 px-1.5 py-0.5 rounded">Vlastník</span>}
                                     </button>
                                 ))}
                             </div>
