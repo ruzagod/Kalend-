@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Share2, Mail, Check, UserPlus, Users, X, Loader2 } from 'lucide-react';
+import { useTasks } from '../context/TaskContext';
 
 export default function SharePanel() {
     const { user, activeCalendarId, calendars } = useTasks();

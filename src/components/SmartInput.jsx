@@ -7,6 +7,7 @@ export default function SmartInput() {
     const { addTask, currentDate } = useTasks();
 
     // Manual overrides
+    const [selectedDate, setSelectedDate] = useState(''); // New date state
     const [selectedTime, setSelectedTime] = useState(''); // New time state
     const [isAllDay, setIsAllDay] = useState(true); // Toggle for all-day
     const [urgency, setUrgency] = useState('normal'); // normal, priority, deadline
