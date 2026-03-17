@@ -22,7 +22,7 @@ export function TaskProvider({ children, user }) {
         const { data: memberData, error: memberError } = await supabase
             .from('calendar_members')
             .select('calendar_id')
-            .eq('user_id', user.id);
+            .eq('user_id', user?.id);
 
         if (memberError) {
             console.error("Error fetching memberships:", memberError);

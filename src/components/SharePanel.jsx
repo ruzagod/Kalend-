@@ -11,7 +11,7 @@ export default function SharePanel() {
     const [error, setError] = useState(null);
 
     const activeCal = calendars?.find(c => c.id === activeCalendarId);
-    const isOwner = activeCal?.owner_id === user.id;
+    const isOwner = activeCal?.owner_id === user?.id;
 
     useEffect(() => {
         if (isOpen && activeCalendarId && activeCal?.is_shared) {
@@ -43,7 +43,7 @@ export default function SharePanel() {
 
         const targetUsername = username.toLowerCase().trim();
 
-        if (targetUsername === user.user_metadata?.username) {
+        if (targetUsername === user?.user_metadata?.username) {
             setError("Nemůžete pozvat sami sebe.");
             setLoading(false);
             return;
@@ -144,7 +144,7 @@ export default function SharePanel() {
                                 <div key={member.user_id} className="flex justify-between items-center bg-white/5 p-2 rounded-lg border border-white/5">
                                     <span className="text-xs text-gray-300 truncate max-w-[140px]">
                                         {member.profiles?.username || 'Neznámý uživatel'}
-                                        {member.user_id === user.id && " (Vy)"}
+                                        {member.user_id === user?.id && " (Vy)"}
                                     </span>
                                 </div>
                             ))

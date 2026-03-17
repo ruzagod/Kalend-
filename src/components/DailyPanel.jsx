@@ -22,8 +22,9 @@ export default function DailyPanel() {
     const fullDate = dateObj.toLocaleDateString('cs-CZ', { day: 'numeric', month: 'long' });
     const title = `${dayName} ${fullDate}`;
 
-    // Filter tasks
-    const todayTasks = tasks.filter(t => t.date === currentDate);
+    // Filter tasks safely
+    const safeTasks = tasks || [];
+    const todayTasks = safeTasks.filter(t => t.date === currentDate);
     const completedCount = todayTasks.filter(t => t.completed).length;
     const totalCount = todayTasks.length;
     const progress = totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
