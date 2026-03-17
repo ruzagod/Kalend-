@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { LogIn, UserPlus, Mail, Lock, Loader2 } from 'lucide-react';
+import { LogIn, UserPlus, Loader2 } from 'lucide-react';
 
 export default function Auth() {
     const [loading, setLoading] = useState(false);
     const [isSignUp, setIsSignUp] = useState(false);
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
 
     const handleAuth = async (e) => {
@@ -22,41 +21,40 @@ export default function Auth() {
             return;
         }
 
-        // We use a pseudo-email for Supabase Auth to get secure password hashing and session management for free
+        // We use a pseudo-email and a hardcoded secure password for Supabase Auth
+        // This allows us to use Supabase without actually requiring users to input passwords/emails.
         const pseudoEmail = `${normalizedUsername}@energymap.local`;
+        const defaultPassword = 'SecurePassword123!@#';
 
         try {
             if (isSignUp) {
                 const { error } = await supabase.auth.signUp({
                     email: pseudoEmail,
-                    password,
+                    password: defaultPassword,
                     options: { data: { username: normalizedUsername } }
                 });
 
                 if (error) {
-                    if (error.message.includes('already registered') || error.message.includes('User already registered')) {
+                    if (error.message.includes('already registered') || error.message.includes('User already registered') || error.status === 422) {
                         throw new Error("Toto uživatelské jméno už existuje. Zvolte prosím jiné.");
-                    }
-                    if (error.message.toLowerCase().includes('password')) {
-                        throw new Error("Heslo musí být dostatečně silné (ideálně alespoň 6 znaků).");
                     }
                     if (error.message.includes('Database error')) {
                         throw new Error("Chyba při vytváření profilu v databázi.");
                     }
-                    throw new Error(error.message); // Unhandled errors fallback
+                    throw new Error("Při registraci nastala chyba. Zkuste to prosím znovu.");
                 }
                 alert('Registrace proběhla úspěšně! Nyní jste přihlášeni.');
             } else {
                 const { error } = await supabase.auth.signInWithPassword({
                     email: pseudoEmail,
-                    password
+                    password: defaultPassword
                 });
 
                 if (error) {
                     if (error.message.includes('Invalid login credentials')) {
-                        throw new Error("Špatné uživatelské jméno nebo heslo.");
+                        throw new Error("Toto uživatelské jméno neexistuje. Zkuste se nejdříve zaregistrovat.");
                     }
-                    throw error;
+                    throw new Error("Nepodařilo se přihlásit. Zkuste to prosím znovu.");
                 }
             }
         } catch (error) {
@@ -65,7 +63,6 @@ export default function Auth() {
             setLoading(false);
         }
     };
-
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#050505] p-4 font-sans text-gray-100">
@@ -89,21 +86,6 @@ export default function Auth() {
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="w-full bg-[#1a1a1a]/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all placeholder:text-gray-600"
                                 placeholder="např. jakub123"
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-300 ml-1">Heslo</label>
-                        <div className="relative group">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-purple-400 transition-colors" size={20} />
-                            <input
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full bg-[#1a1a1a]/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all placeholder:text-gray-600"
-                                placeholder="••••••••"
                                 required
                             />
                         </div>
