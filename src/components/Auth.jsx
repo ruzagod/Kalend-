@@ -30,8 +30,8 @@ export default function Auth() {
         }
 
         // We use a pseudo-email for Supabase Auth to get secure password hashing and session management for free
-        // The user NEVER sees this email. It just uses their username.
-        const pseudoEmail = `${normalizedUsername}@energymap.local`;
+        // The user NEVER sees this email. It just uses their username with a generic valid-looking domain to pass basic checks.
+        const pseudoEmail = `${normalizedUsername}@energymap.app`;
 
         try {
             if (isSignUp) {
