@@ -97,20 +97,15 @@ export default function TaskItem({ task, variant = 'simple' }) {
         }
 
         switch (variant) {
-            case 'priority': // RED - Neon Glow
-                return base + "bg-red-950/20 border-red-500/20 hover:border-red-500/40 hover:shadow-[0_0_15px_-3px_rgba(248,113,113,0.2)]";
-            case 'timeline': // YELLOW - Neon Glow
-                // If it's a deadline in timeline, maybe give it a slight orange tint, otherwise yellow
-                if (task.type === 'deadline') {
-                    return base + "bg-orange-950/20 border-orange-500/20 hover:border-orange-500/40 hover:shadow-[0_0_15px_-3px_rgba(249,115,22,0.2)]";
-                }
+            case 'priority': // YELLOW - Neon Glow
                 return base + "bg-yellow-950/20 border-yellow-500/20 hover:border-yellow-500/40 hover:shadow-[0_0_15px_-3px_rgba(250,204,21,0.2)]";
+            case 'timeline': // GREEN - Neon Glow
+                return base + "bg-green-950/20 border-green-500/20 hover:border-green-500/40 hover:shadow-[0_0_15px_-3px_rgba(74,222,128,0.2)]";
             default: // BLUE/Simple - Glass
-                // Highlight deadlines in the "Others" list
                 if (task.type === 'deadline') {
-                    return base + "bg-orange-950/20 border-orange-500/20 hover:border-orange-500/40 hover:bg-[#1a1a1a]/60";
+                    return base + "bg-green-950/20 border-green-500/20 hover:border-green-500/40 hover:bg-[#1a1a1a]/60";
                 }
-                return base + "bg-[#1a1a1a]/40 border-white/5 hover:border-blue-400/30 hover:bg-[#1a1a1a]/60";
+                return base + "bg-[#1a1a1a]/40 border-blue-400/10 hover:border-blue-400/30 hover:bg-[#1a1a1a]/60";
         }
     };
 
@@ -222,8 +217,8 @@ export default function TaskItem({ task, variant = 'simple' }) {
                             <ArrowRight size={12} /> {task.duration} min
                         </span>
 
-                        {variant === 'priority' && <span className="text-red-400/80 ml-auto flex items-center gap-1"><Star size={10} fill="currentColor" /> Priorita</span>}
-                        {task.type === 'deadline' && variant !== 'priority' && <span className="text-orange-400/80 ml-auto flex items-center gap-1"><Clock size={10} /> Deadline</span>}
+                        {variant === 'priority' && <span className="text-yellow-400/80 ml-auto flex items-center gap-1"><Star size={10} fill="currentColor" /> Priorita</span>}
+                        {task.type === 'deadline' && variant !== 'priority' && <span className="text-green-400/80 ml-auto flex items-center gap-1"><Clock size={10} /> Deadline</span>}
                     </div>
                 )}
             </div>

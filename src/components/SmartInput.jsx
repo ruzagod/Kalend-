@@ -197,8 +197,11 @@ export default function SmartInput() {
             </div>
 
             {!isExpanded && (
-                <div className="absolute -bottom-6 left-4 flex gap-4 text-xs text-gray-400 opacity-0 md:opacity-100 transition-opacity">
-                    <span>💡 Tip: Klikni pro více možností</span>
+                <div
+                    onClick={() => setIsExpanded(true)}
+                    className="absolute -bottom-6 left-4 flex gap-4 text-xs text-gray-400 opacity-0 md:opacity-100 transition-opacity cursor-pointer hover:text-purple-400"
+                >
+                    <span>💡 Tip: Klikni pro více možností (datum, čas, priorita)</span>
                 </div>
             )}
         </form>

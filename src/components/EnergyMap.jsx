@@ -73,11 +73,11 @@ export default function WeeklyOverview() {
                                 {dayTasks.slice(0, 4).map(task => ( // Show max 4 tasks to avoid overflow
                                     <div key={task.id} className={`text-[11px] px-2 py-1.5 rounded-lg border truncate font-medium
                                         ${task.completed ? 'opacity-60 line-through bg-gray-900 border-transparent text-gray-300' : ''} 
-                                        ${!task.completed && task.type === 'priority' ? 'bg-red-950/50 border-red-500/40 text-red-200' :
-                                            !task.completed && task.type === 'deadline' ? 'bg-orange-950/50 border-orange-500/40 text-orange-200' :
+                                        ${!task.completed && task.type === 'priority' ? 'bg-yellow-950/50 border-yellow-500/40 text-yellow-200' :
+                                            !task.completed && task.type === 'deadline' ? 'bg-green-950/50 border-green-500/40 text-green-200' :
                                                 !task.completed ? 'bg-blue-950/40 border-blue-500/30 text-blue-200' : ''}`}
                                     >
-                                        <span className="opacity-80 mr-1">{task.type === 'priority' ? '🔥' : task.type === 'deadline' ? '⏰' : '•'}</span>
+                                        <span className="opacity-80 mr-1">{task.type === 'priority' ? '⚡' : task.type === 'deadline' ? '⏰' : '•'}</span>
                                         {task.title}
                                     </div>
                                 ))}
