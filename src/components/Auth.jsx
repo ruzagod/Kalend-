@@ -34,10 +34,16 @@ export default function Auth() {
                 });
 
                 if (error) {
-                    if (error.message.includes('already registered') || error.status === 422) {
+                    if (error.message.includes('already registered') || error.message.includes('User already registered')) {
                         throw new Error("Toto uživatelské jméno už existuje. Zvolte prosím jiné.");
                     }
-                    throw error;
+                    if (error.message.toLowerCase().includes('password')) {
+                        throw new Error("Heslo musí být dostatečně silné (ideálně alespoň 6 znaků).");
+                    }
+                    if (error.message.includes('Database error')) {
+                        throw new Error("Chyba při vytváření profilu v databázi.");
+                    }
+                    throw new Error(error.message); // Unhandled errors fallback
                 }
                 alert('Registrace proběhla úspěšně! Nyní jste přihlášeni.');
             } else {
