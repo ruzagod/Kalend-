@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { LogIn, UserPlus, Loader2 } from 'lucide-react';
+import { LogIn, UserPlus, Lock, Loader2 } from 'lucide-react';
 
 export default function Auth() {
     const [loading, setLoading] = useState(false);
     const [isSignUp, setIsSignUp] = useState(false);
     const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
 
     const handleAuth = async (e) => {
@@ -21,40 +22,47 @@ export default function Auth() {
             return;
         }
 
-        // We use a pseudo-email and a hardcoded secure password for Supabase Auth
-        // This allows us to use Supabase without actually requiring users to input passwords/emails.
+        // Prevent Supabase 422 errors for weak passwords by checking it client-side
+        if (isSignUp && password.length < 6) {
+            setError("Heslo musí mít alespoň 6 znaků.");
+            setLoading(false);
+            return;
+        }
+
+        // We use a pseudo-email for Supabase Auth to get secure password hashing and session management for free
+        // The user NEVER sees this email. It just uses their username.
         const pseudoEmail = `${normalizedUsername}@energymap.local`;
-        const defaultPassword = 'SecurePassword123!@#';
 
         try {
             if (isSignUp) {
                 const { error } = await supabase.auth.signUp({
                     email: pseudoEmail,
-                    password: defaultPassword,
+                    password,
                     options: { data: { username: normalizedUsername } }
                 });
 
                 if (error) {
+                    // Since we already check password length above, if we get a 422 it's almost certainly a duplicate username.
                     if (error.message.includes('already registered') || error.message.includes('User already registered') || error.status === 422) {
                         throw new Error("Toto uživatelské jméno už existuje. Zvolte prosím jiné.");
                     }
                     if (error.message.includes('Database error')) {
                         throw new Error("Chyba při vytváření profilu v databázi.");
                     }
-                    throw new Error("Při registraci nastala chyba. Zkuste to prosím znovu.");
+                    throw new Error("Při registraci nastala chyba: " + error.message);
                 }
                 alert('Registrace proběhla úspěšně! Nyní jste přihlášeni.');
             } else {
                 const { error } = await supabase.auth.signInWithPassword({
                     email: pseudoEmail,
-                    password: defaultPassword
+                    password
                 });
 
                 if (error) {
                     if (error.message.includes('Invalid login credentials')) {
-                        throw new Error("Toto uživatelské jméno neexistuje. Zkuste se nejdříve zaregistrovat.");
+                        throw new Error("Špatné uživatelské jméno nebo heslo.");
                     }
-                    throw new Error("Nepodařilo se přihlásit. Zkuste to prosím znovu.");
+                    throw new Error("Nepodařilo se přihlásit: " + error.message);
                 }
             }
         } catch (error) {
@@ -86,6 +94,21 @@ export default function Auth() {
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="w-full bg-[#1a1a1a]/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all placeholder:text-gray-600"
                                 placeholder="např. jakub123"
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium text-gray-300 ml-1">Heslo</label>
+                        <div className="relative group">
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-purple-400 transition-colors" size={20} />
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full bg-[#1a1a1a]/50 border border-white/10 rounded-xl py-3 pl-11 pr-4 focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all placeholder:text-gray-600"
+                                placeholder="••••••••"
                                 required
                             />
                         </div>
