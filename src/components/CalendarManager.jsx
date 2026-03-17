@@ -21,6 +21,7 @@ export default function CalendarManager() {
     const [isShared, setIsShared] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const handleCreate = async (e) => {
         e.preventDefault();
@@ -77,26 +78,29 @@ export default function CalendarManager() {
     const sharedCalendars = calendars.filter(c => c.is_shared);
 
     return (
-        <div className="relative group/manager">
+        <div className="relative">
             {/* User Info Display */}
             <div className="absolute -top-6 left-1 text-xs text-gray-400 flex items-center gap-1.5 opacity-60">
                 <Users size={12} /> Přihlášen jako: <strong className="text-gray-200">{username}</strong>
             </div>
 
             {/* Active Calendar Display */}
-            <div className="flex items-center gap-3 bg-[#1a1a1a]/80 border border-white/10 px-4 py-3 rounded-2xl cursor-pointer hover:bg-[#222] transition-colors shadow-lg">
+            <div
+                className="flex items-center gap-3 bg-[#1a1a1a]/80 border border-white/10 px-4 py-3 rounded-2xl cursor-pointer hover:bg-[#222] transition-colors shadow-lg"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
                 <div className={`p-2 rounded-xl ${activeCal?.is_shared ? 'bg-blue-500/20 text-blue-400' : 'bg-purple-500/20 text-purple-400'}`}>
                     {activeCal?.is_shared ? <Users size={20} /> : <CalendarIcon size={20} />}
                 </div>
                 <div className="flex-1">
                     <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Aktivní kalendář</p>
-                    <p className="font-bold text-gray-100">{activeCal?.name || 'Načítání...'}</p>
+                    <p className="font-bold text-gray-100">{activeCal?.name || 'Můj Kalendář'}</p>
                 </div>
-                <div className="text-gray-500 group-hover/manager:text-gray-300">▼</div>
+                <div className="text-gray-500">▼</div>
             </div>
 
             {/* Dropdown / Menu */}
-            <div className="absolute top-full left-0 right-0 mt-2 glass-panel p-2 rounded-2xl border border-white/10 shadow-2xl z-50 opacity-0 invisible group-hover/manager:opacity-100 group-hover/manager:visible transition-all duration-200 origin-top w-72">
+            <div className={`absolute top-full left-0 right-0 mt-2 glass-panel p-2 rounded-2xl border border-white/10 shadow-2xl z-50 transition-all duration-200 origin-top w-72 ${isDropdownOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
                 <div className="max-h-80 overflow-y-auto space-y-4 p-2 custom-scrollbar">
 
                     {/* My Calendars Section */}
@@ -109,7 +113,7 @@ export default function CalendarManager() {
                                 {myCalendars.map(cal => (
                                     <button
                                         key={cal.id}
-                                        onClick={() => setActiveCalendarId(cal.id)}
+                                        onClick={() => { setActiveCalendarId(cal.id); setIsDropdownOpen(false); }}
                                         className={`w-full text-left px-3 py-2 rounded-xl flex items-center gap-3 transition-colors ${activeCalendarId === cal.id ? 'bg-purple-500/20 text-purple-300 font-medium border border-purple-500/30' : 'hover:bg-white/5 text-gray-300 border border-transparent'}`}
                                     >
                                         <CalendarIcon size={16} className={activeCalendarId === cal.id ? 'text-purple-400' : 'text-gray-500'} />
@@ -130,7 +134,7 @@ export default function CalendarManager() {
                                 {sharedCalendars.map(cal => (
                                     <button
                                         key={cal.id}
-                                        onClick={() => setActiveCalendarId(cal.id)}
+                                        onClick={() => { setActiveCalendarId(cal.id); setIsDropdownOpen(false); }}
                                         className={`w-full text-left px-3 py-2 rounded-xl flex items-center gap-3 transition-colors ${activeCalendarId === cal.id ? 'bg-blue-500/20 text-blue-300 font-medium border border-blue-500/30' : 'hover:bg-white/5 text-gray-300 border border-transparent'}`}
                                     >
                                         <Users size={16} className={activeCalendarId === cal.id ? 'text-blue-400' : 'text-gray-500'} />

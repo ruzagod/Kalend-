@@ -32,7 +32,20 @@ export function TaskProvider({ children, user }) {
         const calIds = memberData.map(m => m.calendar_id);
 
         if (calIds.length === 0) {
-            setCalendars([]);
+            // Auto-create default calendar for new users
+            const { data: newCal, error: createError } = await supabase
+                .from('calendars')
+                .insert([{ name: 'Můj Kalendář', owner_id: user.id, is_shared: false }])
+                .select()
+                .single();
+
+            if (!createError && newCal) {
+                await supabase.from('calendar_members').insert([{ calendar_id: newCal.id, user_id: user.id }]);
+                setCalendars([newCal]);
+                setActiveCalendarId(newCal.id);
+            } else {
+                setCalendars([]);
+            }
             return;
         }
 
